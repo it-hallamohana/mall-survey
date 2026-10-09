@@ -63,10 +63,10 @@ export default function DemographicsCharts({ data, loading }) {
       <ChartCard title="10 Kota Teratas" loading={loading}>
         {data.cities?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.cities} layout="vertical" margin={{ top: 5, right: 30, left: 60, bottom: 5 }}>
+            <BarChart data={data.cities} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={100} />
+              <YAxis dataKey="name" type="category" width={110} />
               <Tooltip />
               <Bar dataKey="value" fill="#E63946" radius={[0, 4, 4, 0]} />
             </BarChart>

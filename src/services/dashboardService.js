@@ -42,6 +42,85 @@ const processJsonbArray = (data, field) => {
   return Object.keys(counts).map(name => ({ name, value: counts[name] })).sort((a, b) => b.value - a.value);
 };
 
+const normalizeCity = (city) => {
+  if (!city) return 'Lainnya';
+  const c = city.trim().toLowerCase();
+  
+  // Deteksi variasi Pekanbaru
+  if (
+    c === 'pku' || 
+    c.includes('pekanbaru') || 
+    c.includes('pekan baru') || 
+    c.includes('panam') || 
+    c.includes('rumbai') || 
+    c.includes('marpoyan') || 
+    c.includes('tampang') || 
+    c.includes('sukajadi') ||
+    c.includes('jalan ') ||
+    c.includes('jl. ') ||
+    c.includes('jl ')
+  ) {
+    return 'Pekanbaru';
+  }
+
+  // Deteksi variasi Kampar / Bangkinang
+  if (c.includes('kampar') || c.includes('bangkinang') || c.includes('siak hulu') || c.includes('kubang')) {
+    return 'Kampar';
+  }
+
+  // Deteksi variasi Dumai
+  if (c.includes('dumai')) {
+    return 'Dumai';
+  }
+
+  // Deteksi variasi Duri / Bengkalis
+  if (c.includes('duri') || c.includes('bengkalis') || c.includes('mandau')) {
+    return 'Duri / Bengkalis';
+  }
+
+  // Deteksi Siak
+  if (c.includes('siak') && !c.includes('siak hulu')) {
+    return 'Siak';
+  }
+
+  // Deteksi Pelalawan / Pangkalan Kerinci
+  if (c.includes('pelalawan') || c.includes('kerinci')) {
+    return 'Pelalawan';
+  }
+
+  // Deteksi Kuansing / Teluk Kuantan
+  if (c.includes('kuansing') || c.includes('kuantan')) {
+    return 'Kuantan Singingi';
+  }
+
+  // Deteksi Rohul / Pasir Pengaraian
+  if (c.includes('rohul') || c.includes('rokan hulu') || c.includes('pasir')) {
+    return 'Rokan Hulu';
+  }
+
+  // Deteksi Rohil / Bagan
+  if (c.includes('rohil') || c.includes('rokan hilir') || c.includes('bagan')) {
+    return 'Rokan Hilir';
+  }
+
+  // Deteksi Inhu / Rengat
+  if (c.includes('inhu') || c.includes('indragiri hulu') || c.includes('rengat')) {
+    return 'Indragiri Hulu';
+  }
+
+  // Deteksi Inhil / Tembilahan
+  if (c.includes('inhil') || c.includes('indragiri hilir') || c.includes('tembilahan')) {
+    return 'Indragiri Hilir';
+  }
+
+  // Title Case untuk kota lainnya
+  return city
+    .trim()
+    .split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+};
+
 const processField = (data, field) => {
   const counts = {};
   data.forEach(row => {
@@ -100,11 +179,23 @@ export const fetchDemographicsData = async (filters) => {
   
   const { data, error } = await query;
   if (error) throw error;
+
+  // Normalisasi kota agar 'Pekanbaru', 'pekanbaru', 'PEKANBARU', 'pku' disatukan
+  const cityCounts = {};
+  data.forEach(row => {
+    if (row.city) {
+      const normalized = normalizeCity(row.city);
+      cityCounts[normalized] = (cityCounts[normalized] || 0) + 1;
+    }
+  });
+  const normalizedCities = Object.keys(cityCounts)
+    .map(name => ({ name, value: cityCounts[name] }))
+    .sort((a, b) => b.value - a.value);
   
   return {
     ageGroups: processField(data, 'age_group'),
     genders: processField(data, 'gender'),
-    cities: processField(data, 'city').slice(0, 10)
+    cities: normalizedCities.slice(0, 10)
   };
 };
 
