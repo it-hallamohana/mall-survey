@@ -9,11 +9,10 @@ export async function submitSurvey(formData) {
       dataToSubmit.promo_consent = dataToSubmit.promo_consent === 'Tertarik';
     }
 
-    // Insert into survey_responses
+    // Insert into survey_responses without .select() because anonymous users only have INSERT permission
     const { data, error } = await supabase
       .from('survey_responses')
-      .insert([dataToSubmit])
-      .select();
+      .insert([dataToSubmit]);
 
     if (error) {
       console.error('Supabase insertion error:', error);
