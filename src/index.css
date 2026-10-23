@@ -16,6 +16,44 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* Premium card shadows */
+.card-premium {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid rgba(229, 229, 229, 0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.card-premium:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04);
+}
+
+/* Gradient text */
+.text-gradient-teal {
+  background: linear-gradient(135deg, #00B4D8, #2A9D8F);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* Stats number animation */
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-count-up {
+  animation: countUp 0.5s ease-out;
+}
+
 body {
   font-family: var(--font-sans);
   color: var(--color-charcoal);

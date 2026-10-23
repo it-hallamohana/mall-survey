@@ -1,95 +1,111 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const ChartCard = ({ title, children, loading }) => (
-  <div className="rounded-lg border border-gray-border bg-white p-4 shadow-sm">
-    <div className="mb-4 flex items-center">
-      <div className="mr-2 h-4 w-4 bg-pxchange-orange rounded-sm"></div>
-      <h3 className="text-lg font-semibold text-charcoal">{title}</h3>
+const COLORS = ['#0EA5E9', '#F43F5E', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+
+const ChartCard = ({ title, children, loading, accentColor = '#F59E0B' }) => (
+  <div className="rounded-xl border border-gray-200/60 bg-white p-5 shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div className="mb-5 flex items-center">
+      <div className="mr-3 h-8 w-1 rounded-full" style={{ backgroundColor: accentColor }}></div>
+      <h3 className="text-base font-semibold text-charcoal">{title}</h3>
     </div>
-    <div className="h-72 w-full">
+    <div className="h-80 w-full">
       {loading ? (
         <div className="flex h-full w-full items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-pxchange-orange"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200" style={{ borderTopColor: accentColor }}></div>
         </div>
       ) : children}
     </div>
   </div>
 );
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-lg">
+        <p className="text-sm font-medium text-charcoal">{label || payload[0].name}</p>
+        <p className="text-lg font-bold" style={{ color: payload[0].fill || payload[0].color || '#F59E0B' }}>
+          {payload[0].value} responden
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function BehaviorCharts({ data, loading }) {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <ChartCard title="Frekuensi Kunjungan" loading={loading}>
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <ChartCard title="Frekuensi Kunjungan" loading={loading} accentColor="#F59E0B">
         {data.visitFrequency?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.visitFrequency} margin={{ top: 5, right: 30, left: 20, bottom: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#F4A261" radius={[4, 4, 0, 0]} />
+            <BarChart data={data.visitFrequency} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" width={150} tick={{ fontSize: 12 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#F59E0B" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
       </ChartCard>
 
-      <ChartCard title="Tujuan Kunjungan" loading={loading}>
+      <ChartCard title="Tujuan Kunjungan" loading={loading} accentColor="#F59E0B">
         {data.visitPurpose?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.visitPurpose} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
+            <BarChart data={data.visitPurpose} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={120} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#2A9D8F" radius={[0, 4, 4, 0]} />
+              <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 12 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#10B981" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
       </ChartCard>
 
-      <ChartCard title="Pendamping Kunjungan" loading={loading}>
+      <ChartCard title="Pendamping Kunjungan" loading={loading} accentColor="#F59E0B">
         {data.companions?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.companions} margin={{ top: 5, right: 30, left: 20, bottom: 30 }}>
+            <BarChart data={data.companions} margin={{ top: 10, right: 30, left: 20, bottom: 25 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#7B2D8E" radius={[4, 4, 0, 0]} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
       </ChartCard>
 
-      <ChartCard title="Durasi Kunjungan" loading={loading}>
+      <ChartCard title="Durasi Kunjungan" loading={loading} accentColor="#F59E0B">
         {data.visitDuration?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.visitDuration} margin={{ top: 5, right: 30, left: 20, bottom: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="value" fill="#00B4D8" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
-      </ChartCard>
-      
-      <ChartCard title="Perkiraan Pengeluaran" loading={loading}>
-        {data.estimatedSpending?.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.estimatedSpending} layout="vertical" margin={{ top: 5, right: 30, left: 80, bottom: 5 }}>
+            <BarChart data={data.visitDuration} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={100} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#E63946" radius={[0, 4, 4, 0]} />
+              <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#0EA5E9" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
+      </ChartCard>
+      
+      <ChartCard title="Perkiraan Pengeluaran" loading={loading} accentColor="#F59E0B">
+        {data.estimatedSpending?.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data.estimatedSpending} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 12 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#F43F5E" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
       </ChartCard>
     </div>
   );

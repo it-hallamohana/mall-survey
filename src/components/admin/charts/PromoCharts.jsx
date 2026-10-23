@@ -1,68 +1,84 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const ChartCard = ({ title, children, loading }) => (
-  <div className="rounded-lg border border-gray-border bg-white p-4 shadow-sm">
-    <div className="mb-4 flex items-center">
-      <div className="mr-2 h-4 w-4 bg-pxchange-teal rounded-sm"></div>
-      <h3 className="text-lg font-semibold text-charcoal">{title}</h3>
+const COLORS = ['#0EA5E9', '#F43F5E', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+
+const ChartCard = ({ title, children, loading, accentColor = '#EC4899' }) => (
+  <div className="rounded-xl border border-gray-200/60 bg-white p-5 shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div className="mb-5 flex items-center">
+      <div className="mr-3 h-8 w-1 rounded-full" style={{ backgroundColor: accentColor }}></div>
+      <h3 className="text-base font-semibold text-charcoal">{title}</h3>
     </div>
-    <div className="h-72 w-full">
+    <div className="h-80 w-full">
       {loading ? (
         <div className="flex h-full w-full items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-pxchange-teal"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200" style={{ borderTopColor: accentColor }}></div>
         </div>
       ) : children}
     </div>
   </div>
 );
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-lg">
+        <p className="text-sm font-medium text-charcoal">{label || payload[0].name}</p>
+        <p className="text-lg font-bold" style={{ color: payload[0].fill || payload[0].color || '#EC4899' }}>
+          {payload[0].value} responden
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function PromoCharts({ data, loading }) {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <ChartCard title="Promosi yang Disukai" loading={loading}>
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <ChartCard title="Promosi yang Disukai" loading={loading} accentColor="#EC4899">
         {data.preferredPromotions?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.preferredPromotions} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
+            <BarChart data={data.preferredPromotions} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={120} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#00B4D8" radius={[0, 4, 4, 0]} />
+              <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 12 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#0EA5E9" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
       </ChartCard>
 
-      <ChartCard title="Sumber Informasi Promosi" loading={loading}>
+      <ChartCard title="Sumber Informasi Promosi" loading={loading} accentColor="#EC4899">
         {data.promotionInfoSources?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data.promotionInfoSources} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
+            <BarChart data={data.promotionInfoSources} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} />
               <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={120} />
-              <Tooltip />
-              <Bar dataKey="value" fill="#F4A261" radius={[0, 4, 4, 0]} />
+              <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 12 }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" fill="#F59E0B" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+        ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
       </ChartCard>
 
-      <div className="lg:col-span-2">
-        <ChartCard title="Media Komunikasi Efektif" loading={loading}>
+      <div className="xl:col-span-2">
+        <ChartCard title="Media Komunikasi Efektif" loading={loading} accentColor="#EC4899">
           {data.effectiveMediaChannels?.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.effectiveMediaChannels} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
+              <BarChart data={data.effectiveMediaChannels} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                 <XAxis type="number" />
-                <YAxis dataKey="name" type="category" width={120} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#E63946" radius={[0, 4, 4, 0]} />
+                <YAxis dataKey="name" type="category" width={140} tick={{ fontSize: 12 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="value" fill="#EC4899" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          ) : <p className="text-center text-gray-500 pt-20">Belum ada data</p>}
+          ) : <p className="text-center text-gray-500 pt-24">Belum ada data</p>}
         </ChartCard>
       </div>
     </div>

@@ -121,6 +121,17 @@ const normalizeCity = (city) => {
     .join(' ');
 };
 
+const ORDINAL_ORDERS = {
+  age_group: ['< 17 Tahun', '17–24 Tahun', '25–34 Tahun', '35–54 Tahun', '> 55 Tahun'],
+  visit_frequency: ['Pertama kali', '1–2 kali per bulan', '1 kali per minggu', '> 2 kali per minggu'],
+  visit_duration: ['< 1 jam', '1–2 jam', '2–3 jam', '> 3 jam'],
+  estimated_spending: ['< Rp100.000', 'Rp100.000–Rp500.000', '> Rp500.000'],
+  satisfaction_level: ['Kurang Puas', 'Cukup', 'Puas', 'Sangat Puas'],
+  family_entertainment_importance: ['Tidak penting', 'Biasa saja', 'Penting', 'Sangat penting'],
+  event_visit_interest: ['Kurang tertarik', 'Tertarik', 'Sangat tertarik'],
+  food_variety: ['Kurang beragam', 'Cukup lengkap', 'Sangat lengkap'],
+};
+
 const processField = (data, field) => {
   const counts = {};
   data.forEach(row => {
@@ -128,6 +139,24 @@ const processField = (data, field) => {
       counts[row[field]] = (counts[row[field]] || 0) + 1;
     }
   });
+  return Object.keys(counts).map(name => ({ name, value: counts[name] })).sort((a, b) => b.value - a.value);
+};
+
+const processFieldOrdered = (data, field) => {
+  const counts = {};
+  data.forEach(row => {
+    if (row[field]) {
+      counts[row[field]] = (counts[row[field]] || 0) + 1;
+    }
+  });
+
+  if (ORDINAL_ORDERS[field]) {
+    return ORDINAL_ORDERS[field].map(name => ({
+      name,
+      value: counts[name] || 0
+    }));
+  }
+
   return Object.keys(counts).map(name => ({ name, value: counts[name] })).sort((a, b) => b.value - a.value);
 };
 
@@ -193,7 +222,7 @@ export const fetchDemographicsData = async (filters) => {
     .sort((a, b) => b.value - a.value);
   
   return {
-    ageGroups: processField(data, 'age_group'),
+    ageGroups: processFieldOrdered(data, 'age_group'),
     genders: processField(data, 'gender'),
     cities: normalizedCities.slice(0, 10)
   };
@@ -207,11 +236,11 @@ export const fetchBehaviorData = async (filters) => {
   if (error) throw error;
   
   return {
-    visitFrequency: processField(data, 'visit_frequency'),
+    visitFrequency: processFieldOrdered(data, 'visit_frequency'),
     visitPurpose: processField(data, 'visit_purpose'),
     companions: processField(data, 'companions'),
-    visitDuration: processField(data, 'visit_duration'),
-    estimatedSpending: processField(data, 'estimated_spending')
+    visitDuration: processFieldOrdered(data, 'visit_duration'),
+    estimatedSpending: processFieldOrdered(data, 'estimated_spending')
   };
 };
 
@@ -225,7 +254,7 @@ export const fetchFnbData = async (filters) => {
   const requestedTenantsList = data.map(r => r.requested_tenants).filter(t => t && t.trim() !== '');
   
   return {
-    foodVariety: processField(data, 'food_variety'),
+    foodVariety: processFieldOrdered(data, 'food_variety'),
     desiredFnbTenants: processJsonbArray(data, 'desired_fnb_tenants'),
     diningFactors: processJsonbArray(data, 'dining_factors'),
     requestedTenants: requestedTenantsList
@@ -241,9 +270,9 @@ export const fetchEntertainmentData = async (filters) => {
   
   return {
     entertainmentAreas: processJsonbArray(data, 'entertainment_areas'),
-    familyEntertainmentImportance: processField(data, 'family_entertainment_importance'),
+    familyEntertainmentImportance: processFieldOrdered(data, 'family_entertainment_importance'),
     desiredEvents: processJsonbArray(data, 'desired_events'),
-    eventVisitInterest: processField(data, 'event_visit_interest')
+    eventVisitInterest: processFieldOrdered(data, 'event_visit_interest')
   };
 };
 
@@ -271,7 +300,7 @@ export const fetchExperienceData = async (filters) => {
   const visitorSuggestionsList = data.map(r => r.visitor_suggestions).filter(t => t && t.trim() !== '');
   
   return {
-    satisfactionLevel: processField(data, 'satisfaction_level'),
+    satisfactionLevel: processFieldOrdered(data, 'satisfaction_level'),
     revisitIntention: processField(data, 'revisit_intention'),
     visitorSuggestions: visitorSuggestionsList
   };
