@@ -1,5 +1,36 @@
 import { supabase } from '../lib/supabase';
 
+// Helper to fetch ALL rows, bypassing Supabase's 1000-row default limit.
+// Uses pagination under the hood.
+const fetchAllRows = async (tableName, selectColumns, filters) => {
+  const PAGE_SIZE = 1000;
+  let allData = [];
+  let from = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    let query = supabase
+      .from(tableName)
+      .select(selectColumns)
+      .range(from, from + PAGE_SIZE - 1);
+
+    query = applyFilters(query, filters);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    allData = allData.concat(data);
+
+    if (data.length < PAGE_SIZE) {
+      hasMore = false;
+    } else {
+      from += PAGE_SIZE;
+    }
+  }
+
+  return allData;
+};
+
 const applyFilters = (query, filters) => {
   if (!filters) return query;
   
@@ -161,11 +192,7 @@ const processFieldOrdered = (data, field) => {
 };
 
 export const fetchSurveyStats = async (filters) => {
-  let query = supabase.from('survey_responses').select('created_at, revisit_intention, satisfaction_level').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'created_at, revisit_intention, satisfaction_level', filters);
   
   const totalResponses = data.length;
   
@@ -203,11 +230,7 @@ export const fetchSurveyStats = async (filters) => {
 };
 
 export const fetchDemographicsData = async (filters) => {
-  let query = supabase.from('survey_responses').select('age_group, gender, city').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'age_group, gender, city', filters);
 
   // Normalisasi kota agar 'Pekanbaru', 'pekanbaru', 'PEKANBARU', 'pku' disatukan
   const cityCounts = {};
@@ -229,11 +252,7 @@ export const fetchDemographicsData = async (filters) => {
 };
 
 export const fetchBehaviorData = async (filters) => {
-  let query = supabase.from('survey_responses').select('visit_frequency, visit_purpose, companions, visit_duration, estimated_spending').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'visit_frequency, visit_purpose, companions, visit_duration, estimated_spending', filters);
   
   return {
     visitFrequency: processFieldOrdered(data, 'visit_frequency'),
@@ -245,11 +264,7 @@ export const fetchBehaviorData = async (filters) => {
 };
 
 export const fetchFnbData = async (filters) => {
-  let query = supabase.from('survey_responses').select('food_variety, desired_fnb_tenants, dining_factors, requested_tenants').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'food_variety, desired_fnb_tenants, dining_factors, requested_tenants', filters);
   
   const requestedTenantsList = data.map(r => r.requested_tenants).filter(t => t && t.trim() !== '');
   
@@ -262,11 +277,7 @@ export const fetchFnbData = async (filters) => {
 };
 
 export const fetchEntertainmentData = async (filters) => {
-  let query = supabase.from('survey_responses').select('entertainment_areas, family_entertainment_importance, desired_events, event_visit_interest').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'entertainment_areas, family_entertainment_importance, desired_events, event_visit_interest', filters);
   
   return {
     entertainmentAreas: processJsonbArray(data, 'entertainment_areas'),
@@ -277,11 +288,7 @@ export const fetchEntertainmentData = async (filters) => {
 };
 
 export const fetchPromoData = async (filters) => {
-  let query = supabase.from('survey_responses').select('preferred_promotions, promotion_information_sources, effective_media_channels').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'preferred_promotions, promotion_information_sources, effective_media_channels', filters);
   
   return {
     preferredPromotions: processJsonbArray(data, 'preferred_promotions'),
@@ -291,11 +298,7 @@ export const fetchPromoData = async (filters) => {
 };
 
 export const fetchExperienceData = async (filters) => {
-  let query = supabase.from('survey_responses').select('satisfaction_level, revisit_intention, visitor_suggestions').limit(5000);
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
+  const data = await fetchAllRows('survey_responses', 'satisfaction_level, revisit_intention, visitor_suggestions', filters);
   
   const visitorSuggestionsList = data.map(r => r.visitor_suggestions).filter(t => t && t.trim() !== '');
   
@@ -343,11 +346,8 @@ export const fetchResponseDetail = async (id) => {
 };
 
 export const exportResponses = async (filters) => {
-  let query = supabase.from('survey_responses').select('*').order('created_at', { ascending: false });
-  query = applyFilters(query, filters);
-  
-  const { data, error } = await query;
-  if (error) throw error;
-  
+  const data = await fetchAllRows('survey_responses', '*', filters);
+  // Sort by date descending client-side
+  data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   return data;
 };
