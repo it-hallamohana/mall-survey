@@ -61,25 +61,31 @@ const applyFilters = (query, filters) => {
   return filteredQuery;
 };
 
-// Normalisasi item JSONB array yang duplikat karena beda spasi
-const JSONB_NORMALIZATIONS = {
-  'Spanduk/ Banner': 'Spanduk/Banner',
-  'Koran Majalah/ Radio/ TV': 'Koran, Majalah, Radio/TV',
-  'Koran, Majalah/ Radio/ TV': 'Koran, Majalah, Radio/TV',
-  'Koran/ Majalah/ Radio/ TV': 'Koran, Majalah, Radio/TV',
-  'Teman / keluarga': 'Teman/Keluarga',
-  'Teman / Keluarga': 'Teman/Keluarga',
-  'Teman/ keluarga': 'Teman/Keluarga',
-  'Teman/ Keluarga': 'Teman/Keluarga',
+// Normalisasi item JSONB array yang duplikat karena beda spasi/kapitalisasi
+// Key = lowercase + spasi dinormalisasi, Value = bentuk kanonikal
+const JSONB_CANONICAL = {
+  'spanduk/banner': 'Spanduk/Banner',
+  'spanduk/ banner': 'Spanduk/Banner',
+  'spanduk / banner': 'Spanduk/Banner',
+  'koran majalah/ radio/ tv': 'Koran, Majalah, Radio/TV',
+  'koran, majalah/ radio/ tv': 'Koran, Majalah, Radio/TV',
+  'koran/ majalah/ radio/ tv': 'Koran, Majalah, Radio/TV',
+  'koran, majalah, radio/tv': 'Koran, Majalah, Radio/TV',
+  'koran majalah radio tv': 'Koran, Majalah, Radio/TV',
+  'koran,majalah,radio/tv': 'Koran, Majalah, Radio/TV',
   'teman/keluarga': 'Teman/Keluarga',
-  'LED / Signage Mall': 'LED/Signage Mall',
-  'LED/ Signage Mall': 'LED/Signage Mall',
+  'teman/ keluarga': 'Teman/Keluarga',
+  'teman / keluarga': 'Teman/Keluarga',
+  'led/signage mall': 'LED/Signage Mall',
+  'led / signage mall': 'LED/Signage Mall',
+  'led/ signage mall': 'LED/Signage Mall',
 };
 
 const normalizeJsonbItem = (item) => {
   if (!item) return item;
   const trimmed = item.trim();
-  return JSONB_NORMALIZATIONS[trimmed] || trimmed;
+  const key = trimmed.toLowerCase();
+  return JSONB_CANONICAL[key] || trimmed;
 };
 
 const processJsonbArray = (data, field) => {
