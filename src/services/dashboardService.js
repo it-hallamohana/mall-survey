@@ -61,12 +61,34 @@ const applyFilters = (query, filters) => {
   return filteredQuery;
 };
 
+// Normalisasi item JSONB array yang duplikat karena beda spasi
+const JSONB_NORMALIZATIONS = {
+  'Spanduk/ Banner': 'Spanduk/Banner',
+  'Koran Majalah/ Radio/ TV': 'Koran, Majalah, Radio/TV',
+  'Koran, Majalah/ Radio/ TV': 'Koran, Majalah, Radio/TV',
+  'Koran/ Majalah/ Radio/ TV': 'Koran, Majalah, Radio/TV',
+  'Teman / keluarga': 'Teman/Keluarga',
+  'Teman / Keluarga': 'Teman/Keluarga',
+  'Teman/ keluarga': 'Teman/Keluarga',
+  'Teman/ Keluarga': 'Teman/Keluarga',
+  'teman/keluarga': 'Teman/Keluarga',
+  'LED / Signage Mall': 'LED/Signage Mall',
+  'LED/ Signage Mall': 'LED/Signage Mall',
+};
+
+const normalizeJsonbItem = (item) => {
+  if (!item) return item;
+  const trimmed = item.trim();
+  return JSONB_NORMALIZATIONS[trimmed] || trimmed;
+};
+
 const processJsonbArray = (data, field) => {
   const counts = {};
   data.forEach(row => {
     if (row[field] && Array.isArray(row[field])) {
       row[field].forEach(item => {
-        counts[item] = (counts[item] || 0) + 1;
+        const normalized = normalizeJsonbItem(item);
+        counts[normalized] = (counts[normalized] || 0) + 1;
       });
     }
   });
