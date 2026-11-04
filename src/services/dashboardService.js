@@ -36,11 +36,12 @@ const applyFilters = (query, filters) => {
   
   let filteredQuery = query;
   
+  // Batas tanggal memakai zona WIB (+07:00) agar sinkron dengan pengelompokan bulan di browser
   if (filters.dateFrom) {
-    filteredQuery = filteredQuery.gte('created_at', `${filters.dateFrom}T00:00:00.000Z`);
+    filteredQuery = filteredQuery.gte('created_at', `${filters.dateFrom}T00:00:00+07:00`);
   }
   if (filters.dateTo) {
-    filteredQuery = filteredQuery.lte('created_at', `${filters.dateTo}T23:59:59.999Z`);
+    filteredQuery = filteredQuery.lte('created_at', `${filters.dateTo}T23:59:59.999+07:00`);
   }
   if (filters.ageGroup) {
     filteredQuery = filteredQuery.eq('age_group', filters.ageGroup);
@@ -230,6 +231,7 @@ export const fetchSurveyStats = async (filters) => {
   let todayResponses = 0;
   let monthResponses = 0;
   let revisitYes = 0;
+  let satisfied = 0;
   const satisfactionCounts = {};
   
   data.forEach(row => {
@@ -238,6 +240,7 @@ export const fetchSurveyStats = async (filters) => {
     if (d >= monthStart) monthResponses++;
     
     if (row.revisit_intention === 'Ya' || row.revisit_intention === 'Yes') revisitYes++;
+    if (row.satisfaction_level === 'Puas' || row.satisfaction_level === 'Sangat Puas') satisfied++;
     
     if (row.satisfaction_level) {
       satisfactionCounts[row.satisfaction_level] = (satisfactionCounts[row.satisfaction_level] || 0) + 1;
@@ -245,14 +248,74 @@ export const fetchSurveyStats = async (filters) => {
   });
   
   const revisitPercentage = totalResponses > 0 ? Math.round((revisitYes / totalResponses) * 100) : 0;
+  const satisfiedPercentage = totalResponses > 0 ? Math.round((satisfied / totalResponses) * 100) : 0;
   
   return {
     totalResponses,
     todayResponses,
     monthResponses,
     revisitPercentage,
+    satisfiedPercentage,
     satisfactionDistribution: Object.keys(satisfactionCounts).map(name => ({ name, value: satisfactionCounts[name] }))
   };
+};
+
+const pad2 = (n) => String(n).padStart(2, '0');
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const MONTH_LONG = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+// Tren bulanan: abaikan filter tanggal, tapi hormati filter lain (usia, gender, dll).
+// Mengembalikan semua bulan dari respons pertama sampai bulan ini (bulan kosong = 0),
+// plus rincian harian per bulan untuk drill-down.
+export const fetchMonthlyTrend = async (filters) => {
+  const nonDateFilters = { ...(filters || {}), dateFrom: '', dateTo: '' };
+  const data = await fetchAllRows('survey_responses', 'created_at, satisfaction_level, revisit_intention', nonDateFilters);
+
+  const buckets = {};
+  let minDate = null;
+
+  data.forEach(row => {
+    const d = new Date(row.created_at);
+    if (isNaN(d)) return;
+    if (!minDate || d < minDate) minDate = d;
+    const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+    if (!buckets[key]) buckets[key] = { total: 0, satisfied: 0, revisit: 0, days: {} };
+    const b = buckets[key];
+    b.total++;
+    if (row.satisfaction_level === 'Puas' || row.satisfaction_level === 'Sangat Puas') b.satisfied++;
+    if (row.revisit_intention === 'Ya') b.revisit++;
+    const day = d.getDate();
+    b.days[day] = (b.days[day] || 0) + 1;
+  });
+
+  if (!minDate) return [];
+
+  const now = new Date();
+  const months = [];
+  let y = minDate.getFullYear();
+  let m = minDate.getMonth();
+  while (y < now.getFullYear() || (y === now.getFullYear() && m <= now.getMonth())) {
+    const key = `${y}-${pad2(m + 1)}`;
+    const b = buckets[key] || { total: 0, satisfied: 0, revisit: 0, days: {} };
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    const daily = Array.from({ length: daysInMonth }, (_, i) => ({ day: i + 1, value: b.days[i + 1] || 0 }));
+    months.push({
+      key,
+      year: y,
+      month: m,
+      label: `${MONTH_SHORT[m]} ${String(y).slice(2)}`,
+      longLabel: `${MONTH_LONG[m]} ${y}`,
+      dateFrom: `${y}-${pad2(m + 1)}-01`,
+      dateTo: `${y}-${pad2(m + 1)}-${pad2(daysInMonth)}`,
+      total: b.total,
+      satisfiedPct: b.total ? Math.round((b.satisfied / b.total) * 100) : 0,
+      revisitPct: b.total ? Math.round((b.revisit / b.total) * 100) : 0,
+      daily,
+    });
+    m++;
+    if (m > 11) { m = 0; y++; }
+  }
+  return months;
 };
 
 export const fetchDemographicsData = async (filters) => {

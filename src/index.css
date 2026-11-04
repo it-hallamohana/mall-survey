@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -77,122 +77,312 @@ body {
   background: #aaa;
 }
 
-/* === Dashboard Redesign Styles === */
 
-/* Sidebar */
-.sidebar {
-  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* =====================================================================
+   DASHBOARD v3 — PXchange brand design system
+   Brand: Pink #ED145B, Orange #F15A29, Teal #00A59C,
+          Purple #B41E8E, Yellow #FDB913, Charcoal #4D4D4F
+   ===================================================================== */
 
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  color: #94A3B8;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-.sidebar-item:hover {
-  background: rgba(255,255,255,0.08);
-  color: #E2E8F0;
-}
-.sidebar-item.active {
-  background: linear-gradient(135deg, rgba(0,180,216,0.2), rgba(42,157,143,0.15));
-  color: #00B4D8;
-  font-weight: 600;
-}
-.sidebar-item.active .sidebar-icon {
-  color: #00B4D8;
+.dash-root {
+  --px-pink: #ED145B;
+  --px-orange: #F15A29;
+  --px-teal: #00A59C;
+  --px-purple: #B41E8E;
+  --px-yellow: #FDB913;
+  --px-ink: #14141F;
+  --px-muted: #6B6B7B;
+  --px-line: rgba(20, 20, 31, 0.07);
+  background:
+    radial-gradient(1200px 600px at 100% -10%, rgba(237, 20, 91, 0.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 20%, rgba(0, 165, 156, 0.07), transparent 60%),
+    #F6F6FA;
+  color: var(--px-ink);
+  min-height: 100vh;
 }
 
-/* Dashboard Cards */
-.kpi-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px 24px;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.02);
-  transition: all 0.3s ease;
+.font-display { font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif; letter-spacing: -0.02em; }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ---------- Sidebar ---------- */
+.dash-sidebar {
+  background: #12121C;
+  background-image:
+    radial-gradient(400px 300px at 0% 0%, rgba(237, 20, 91, 0.22), transparent 70%),
+    radial-gradient(400px 300px at 100% 100%, rgba(0, 165, 156, 0.2), transparent 70%);
+  color: #fff;
+}
+.dash-nav-item {
   position: relative;
-  overflow: hidden;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px; font-weight: 500;
+  transition: all 0.25s ease;
 }
-.kpi-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
-  transform: translateY(-2px);
+.dash-nav-item:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+.dash-nav-item.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(237, 20, 91, 0.9), rgba(241, 90, 41, 0.9));
+  box-shadow: 0 10px 30px -10px rgba(237, 20, 91, 0.7);
 }
-.kpi-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
+.dash-nav-item .nav-badge {
+  margin-left: auto;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.dash-nav-item.active .nav-badge { background: rgba(255, 255, 255, 0.25); }
+
+/* Mobile bottom navigation */
+.dash-bottom-nav {
+  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 60;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  padding: 6px;
+  background: rgba(18, 18, 28, 0.92);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.45);
+}
+.dash-bottom-nav button {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 8px; border-radius: 14px;
+  font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.6);
+  transition: all 0.25s ease;
+}
+.dash-bottom-nav button.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--px-pink), var(--px-orange));
 }
 
-/* Chart Cards */
-.chart-card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.02);
-  transition: all 0.3s ease;
-  overflow: hidden;
+/* ---------- Hero ---------- */
+.dash-hero {
+  position: relative; overflow: hidden;
+  border-radius: 28px;
+  color: #fff;
+  background: linear-gradient(120deg, #ED145B 0%, #C2185B 30%, #B41E8E 60%, #5B2A86 100%);
+  box-shadow: 0 30px 60px -30px rgba(180, 30, 142, 0.6);
 }
-.chart-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+.dash-hero::before, .dash-hero::after {
+  content: ''; position: absolute; border-radius: 999px; pointer-events: none;
 }
-.chart-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px 0;
+.dash-hero::before {
+  width: 420px; height: 420px; right: -120px; top: -180px;
+  background: radial-gradient(circle, rgba(253, 185, 19, 0.55), transparent 65%);
+  animation: floaty 9s ease-in-out infinite;
 }
-.chart-card-body {
-  padding: 16px 24px 24px;
+.dash-hero::after {
+  width: 360px; height: 360px; left: 30%; bottom: -220px;
+  background: radial-gradient(circle, rgba(0, 165, 156, 0.6), transparent 65%);
+  animation: floaty 11s ease-in-out infinite reverse;
 }
-
-/* Mobile sidebar overlay */
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 40;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at 80% 20%, #000 10%, transparent 70%);
 }
-.sidebar-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
+@keyframes floaty {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 20px) scale(1.08); }
 }
-
-/* Scrollbar styling */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+.hero-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  font-size: 12px; font-weight: 600;
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+.pulse-dot {
+  width: 8px; height: 8px; border-radius: 999px; background: #4ADE80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  animation: pulse 2s infinite;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.2);
-  border-radius: 4px;
-}
-
-/* Tab indicator animation */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.tab-content {
-  animation: slideIn 0.3s ease-out;
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
 }
 
-/* Responsive table */
-.responsive-table {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* ---------- Cards ---------- */
+.dcard {
+  position: relative;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--px-line);
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(20, 20, 31, 0.04), 0 12px 32px -18px rgba(20, 20, 31, 0.18);
+  transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease;
 }
+.dcard:hover {
+  box-shadow: 0 1px 2px rgba(20, 20, 31, 0.04), 0 24px 48px -24px rgba(20, 20, 31, 0.28);
+}
+.dcard-lift:hover { transform: translateY(-3px); }
+
+.kpi {
+  position: relative; overflow: hidden;
+  padding: 20px;
+}
+.kpi .kpi-glow {
+  position: absolute; width: 160px; height: 160px; right: -60px; top: -60px;
+  border-radius: 999px; opacity: 0.16; filter: blur(4px);
+  transition: transform 0.5s ease, opacity 0.3s ease;
+}
+.kpi:hover .kpi-glow { transform: scale(1.35); opacity: 0.26; }
+
+/* ---------- Section header & nav ---------- */
+.section-anchor { scroll-margin-top: 140px; }
+.section-nav {
+  display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  padding: 2px;
+}
+.section-nav::-webkit-scrollbar { display: none; }
+.section-pill {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px;
+  font-size: 13px; font-weight: 600;
+  color: var(--px-muted);
+  background: #fff;
+  border: 1px solid var(--px-line);
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+.section-pill:hover { color: var(--px-ink); border-color: rgba(20,20,31,0.18); }
+.section-pill.active {
+  color: #fff; border-color: transparent;
+  background: var(--px-ink);
+  box-shadow: 0 8px 20px -10px rgba(20, 20, 31, 0.6);
+}
+
+/* ---------- Bar list (custom horizontal bars) ---------- */
+.barlist-row {
+  position: relative;
+  display: block; width: 100%; text-align: left;
+  padding: 8px 10px; border-radius: 12px;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+.barlist-row:hover { background: rgba(20, 20, 31, 0.035); }
+.barlist-track {
+  height: 10px; border-radius: 999px; background: rgba(20, 20, 31, 0.05); overflow: hidden;
+}
+.barlist-fill {
+  height: 100%; border-radius: 999px;
+  transform-origin: left center;
+  animation: growX 0.9s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.barlist-dim .barlist-row { opacity: 0.45; }
+.barlist-dim .barlist-row:hover { opacity: 1; }
+
+/* ---------- Chips ---------- */
+.filter-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 8px 6px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  background: rgba(237, 20, 91, 0.08); color: #C0104A;
+  border: 1px solid rgba(237, 20, 91, 0.2);
+  animation: popIn 0.25s ease both;
+}
+.filter-chip button {
+  display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center;
+  border-radius: 999px; transition: background 0.2s ease;
+}
+.filter-chip button:hover { background: rgba(237, 20, 91, 0.18); }
+@keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+.month-chip {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: flex-start;
+  min-width: 92px; padding: 10px 14px; border-radius: 16px;
+  background: #fff; border: 1px solid var(--px-line);
+  transition: all 0.25s ease;
+}
+.month-chip:hover { border-color: rgba(237, 20, 91, 0.35); transform: translateY(-2px); }
+.month-chip.active {
+  color: #fff; border-color: transparent;
+  background: linear-gradient(135deg, var(--px-pink), var(--px-purple));
+  box-shadow: 0 12px 24px -12px rgba(237, 20, 91, 0.7);
+}
+
+/* ---------- Inputs ---------- */
+.dinput {
+  width: 100%;
+  border-radius: 12px; border: 1px solid var(--px-line);
+  background: #fff; padding: 10px 12px; font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.dinput:focus { outline: none; border-color: var(--px-pink); box-shadow: 0 0 0 4px rgba(237, 20, 91, 0.1); }
+
+.dbtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 16px; border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  transition: all 0.2s ease;
+}
+.dbtn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, var(--px-pink), var(--px-orange));
+  box-shadow: 0 10px 20px -10px rgba(237, 20, 91, 0.8);
+}
+.dbtn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.dbtn-ghost { background: #fff; border: 1px solid var(--px-line); color: var(--px-ink); }
+.dbtn-ghost:hover { border-color: rgba(20, 20, 31, 0.2); }
+.dbtn-dark { background: var(--px-ink); color: #fff; }
+.dbtn-dark:hover { background: #2A2A3A; }
+
+/* ---------- Table ---------- */
+.dtable th {
+  position: sticky; top: 0; z-index: 1;
+  background: #FAFAFC;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--px-muted);
+  padding: 12px 16px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--px-line);
+}
+.dtable td { padding: 14px 16px; border-bottom: 1px solid var(--px-line); white-space: nowrap; }
+.dtable tbody tr { transition: background 0.15s ease; cursor: pointer; }
+.dtable tbody tr:hover { background: rgba(237, 20, 91, 0.035); }
+.dtable tbody tr:hover .row-arrow { opacity: 1; transform: translateX(0); }
+.row-arrow { opacity: 0; transform: translateX(-6px); transition: all 0.2s ease; }
+
+/* ---------- Drawer ---------- */
+.drawer-backdrop {
+  position: fixed; inset: 0; z-index: 80;
+  background: rgba(10, 10, 20, 0.45);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease both;
+}
+.drawer-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 90;
+  width: min(640px, 100vw);
+  background: #F6F6FA;
+  box-shadow: -30px 0 60px -20px rgba(0, 0, 0, 0.35);
+  animation: slideInRight 0.35s cubic-bezier(.2,.8,.2,1) both;
+  display: flex; flex-direction: column;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+/* ---------- Misc ---------- */
+.reveal { animation: revealUp 0.6s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes revealUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(20,20,31,0.05) 25%, rgba(20,20,31,0.09) 37%, rgba(20,20,31,0.05) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 12px;
+}
+@keyframes shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+.thin-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+.thin-scroll::-webkit-scrollbar-track { background: transparent; }
+.thin-scroll::-webkit-scrollbar-thumb { background: rgba(20,20,31,0.15); border-radius: 999px; }
+
+.recharts-wrapper, .recharts-surface { outline: none; }
+.recharts-sector, .recharts-rectangle { outline: none; }
