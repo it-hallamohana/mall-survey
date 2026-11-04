@@ -61,30 +61,26 @@ const applyFilters = (query, filters) => {
   return filteredQuery;
 };
 
-// Normalisasi item JSONB array yang duplikat karena beda spasi/kapitalisasi
-// Key = lowercase + spasi dinormalisasi, Value = bentuk kanonikal
+// Normalisasi item JSONB array yang duplikat karena beda spasi/kapitalisasi.
+// Pendekatan: normalisasi key dengan menghapus semua spasi di sekitar separator (/, ,)
+// lalu cocokkan ke bentuk kanonikal.
 const JSONB_CANONICAL = {
   'spanduk/banner': 'Spanduk/Banner',
-  'spanduk/ banner': 'Spanduk/Banner',
-  'spanduk / banner': 'Spanduk/Banner',
-  'koran majalah/ radio/ tv': 'Koran, Majalah, Radio/TV',
-  'koran, majalah/ radio/ tv': 'Koran, Majalah, Radio/TV',
-  'koran/ majalah/ radio/ tv': 'Koran, Majalah, Radio/TV',
-  'koran, majalah, radio/tv': 'Koran, Majalah, Radio/TV',
-  'koran majalah radio tv': 'Koran, Majalah, Radio/TV',
   'koran,majalah,radio/tv': 'Koran, Majalah, Radio/TV',
+  'koran majalah radio/tv': 'Koran, Majalah, Radio/TV',
+  'koran majalah radio tv': 'Koran, Majalah, Radio/TV',
   'teman/keluarga': 'Teman/Keluarga',
-  'teman/ keluarga': 'Teman/Keluarga',
-  'teman / keluarga': 'Teman/Keluarga',
   'led/signage mall': 'LED/Signage Mall',
-  'led / signage mall': 'LED/Signage Mall',
-  'led/ signage mall': 'LED/Signage Mall',
 };
 
 const normalizeJsonbItem = (item) => {
   if (!item) return item;
   const trimmed = item.trim();
-  const key = trimmed.toLowerCase();
+  // Collapse semua spasi di sekitar / dan , lalu lowercase untuk lookup
+  const key = trimmed.toLowerCase()
+    .replace(/\s*\/\s*/g, '/')    // "Spanduk/ Banner" → "spanduk/banner"
+    .replace(/\s*,\s*/g, ',')     // "Koran, Majalah" → "koran,majalah"
+    .replace(/\s+/g, ' ');        // multiple spaces → single space
   return JSONB_CANONICAL[key] || trimmed;
 };
 
@@ -109,6 +105,8 @@ const normalizeCity = (city) => {
   if (
     c === 'pku' || 
     c.includes('pekanbaru') || 
+    c.includes('pekanbru') ||
+    c.includes('pkanbaru') ||
     c.includes('pekan baru') || 
     c.includes('panam') || 
     c.includes('rumbai') || 

@@ -36,7 +36,7 @@ const PieTooltip = ({ active, payload }) => {
 };
 
 const renderPercentLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
-  if (percent < 0.03) return null;
+  if (percent < 0.005) return null;
   const RADIAN = Math.PI / 180;
   const radius = outerRadius + 18;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);

@@ -19,7 +19,7 @@ const PieTooltip = ({ active, payload }) => {
 };
 
 const renderPercentLabel = ({ cx, cy, midAngle, outerRadius, percent }) => {
-  if (percent < 0.03) return null;
+  if (percent < 0.005) return null;
   const RADIAN = Math.PI / 180; const r = outerRadius + 18;
   const x = cx + r * Math.cos(-midAngle * RADIAN); const y = cy + r * Math.sin(-midAngle * RADIAN);
   return <text x={x} y={y} fill="#374151" textAnchor={x > cx ? 'start' : 'end'} fontSize={12} fontWeight={600}>{(percent*100).toFixed(0)}%</text>;
