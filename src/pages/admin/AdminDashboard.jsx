@@ -294,7 +294,9 @@ export default function AdminDashboard() {
       <main className="flex-1 min-w-0 pb-28 lg:pb-10">
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center justify-between px-4 pt-4">
-          <div className="rounded-xl bg-white px-3 py-2 shadow-sm"><img src="/assets/pxchange-logo.png" alt="PXchange" className="h-6 w-auto" /></div>
+          <div className="rounded-xl bg-white px-3.5 py-2 shadow-sm overflow-hidden flex items-center">
+            <img src="/assets/pxchange-logo.png" alt="PXchange" className="w-36 h-10 object-cover object-center" />
+          </div>
           <button onClick={signOut} className="h-10 w-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#6B6B7B]" title="Logout"><LogOut size={17} /></button>
         </div>
 

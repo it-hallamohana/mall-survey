@@ -81,7 +81,7 @@ export default function SummaryCards({ stats, months = [], loading }) {
       chart: <Sparkline values={curDaily} color={BRAND.orange} />,
     },
     {
-      label: 'Tingkat Puas', icon: Smile, color: BRAND.teal, suffix: '%',
+      label: 'Tingkat Kepuasan', icon: Smile, color: BRAND.teal, suffix: '%',
       value: stats?.satisfiedPercentage || 0,
       foot: <span className="text-[11px] text-[#6B6B7B]">Puas + Sangat Puas</span>,
       ring: true,

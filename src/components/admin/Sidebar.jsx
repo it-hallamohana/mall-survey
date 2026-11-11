@@ -15,9 +15,13 @@ export default function Sidebar({ activeTab, onTabChange, user, totalCount }) {
   return (
     <aside className="dash-sidebar hidden lg:flex sticky top-0 h-screen w-[264px] shrink-0 flex-col px-4 py-6">
       {/* Brand */}
-      <div className="px-2 mb-8">
-        <div className="rounded-2xl bg-white px-4 py-3 inline-flex">
-          <img src="/assets/pxchange-logo.png" alt="Pekanbaru Xchange" className="h-8 w-auto" />
+      <div className="px-2 mb-7">
+        <div className="rounded-2xl bg-white px-4 py-3 flex items-center justify-center shadow-md overflow-hidden">
+          <img
+            src="/assets/pxchange-logo.png"
+            alt="Pekanbaru Xchange"
+            className="w-full max-w-[190px] h-14 object-cover object-center"
+          />
         </div>
         <p className="mt-4 font-display text-white text-lg font-bold leading-tight">Visitor Insight</p>
         <p className="text-white/50 text-xs">Survey Pengunjung PXchange</p>
